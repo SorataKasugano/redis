@@ -149,7 +149,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_OFF_T_DEFINED;WIN32;_CONSOLE;%(PreprocessorDefinitions);LACKS_STDLIB_H;NO_QFORKIMPL;_WIN32_WINNT=0x0501</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)..\deps\lua\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
