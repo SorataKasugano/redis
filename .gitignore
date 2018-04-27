@@ -10,6 +10,7 @@ redis-sentinel
 redis-server
 doc-tools
 release
+api/
 bin/
 obj/
 Debug/
