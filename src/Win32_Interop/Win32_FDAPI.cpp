@@ -637,7 +637,7 @@ int FDAPI_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
             pollCopy[n].revents = fds[n].revents;
         }
 
-        /*if (WindowsVersion::getInstance().IsAtLeast_6_0()) {
+        if (WindowsVersion::getInstance().IsAtLeast_6_0()) {
             static auto f_WSAPoll = dllfunctor_stdcall<int, WSAPOLLFD*, ULONG, INT>("ws2_32.dll", "WSAPoll");
 
             // WSAPoll implementation has a bug that cause the client
@@ -653,7 +653,7 @@ int FDAPI_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
             pollCopy = NULL;
 
             return ret;
-        } else */ {
+        } else {
             int ret;
             fd_set readSet;
             fd_set writeSet;
