@@ -45,6 +45,7 @@
 #pragma once
 #endif
 
+// SK: incorrect include in XP
 //#if WINVER <= _WIN32_WINNT_WS03
 #include "win32_winapifamily.h"
 //#else
