@@ -637,14 +637,13 @@ int FDAPI_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
             pollCopy[n].revents = fds[n].revents;
         }
 
-        if (WindowsVersion::getInstance().IsAtLeast_6_0()) {
+        /*if (WindowsVersion::getInstance().IsAtLeast_6_0()) {
             static auto f_WSAPoll = dllfunctor_stdcall<int, WSAPOLLFD*, ULONG, INT>("ws2_32.dll", "WSAPoll");
 
             // WSAPoll implementation has a bug that cause the client
             // to wait forever on a non-existant endpoint
             // See https://github.com/MSOpenTech/redis/issues/214
             int ret = f_WSAPoll(pollCopy, nfds, timeout);
-
             for (nfds_t n = 0; n < nfds; n++) {
                 fds[n].events = pollCopy[n].events;
                 fds[n].revents = pollCopy[n].revents;
@@ -654,36 +653,35 @@ int FDAPI_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
             pollCopy = NULL;
 
             return ret;
-        } else {
+        } else */ {
             int ret;
             fd_set readSet;
             fd_set writeSet;
             fd_set excepSet;
-
+			
             FD_ZERO(&readSet);
             FD_ZERO(&writeSet);
             FD_ZERO(&excepSet);
-
+			
             if (nfds >= FD_SETSIZE) {
                 errno = EINVAL;
                 return -1;
             }
-
+			
             nfds_t i;
             for (i = 0; i < nfds; i++) {
                 if (fds[i].fd == INVALID_SOCKET) {
                     continue;
                 }
-                if (pollCopy[i].fd >= FD_SETSIZE) {
+				// SK: change pollCopy to fds because pollCopy[i].fd is a socket not a fd
+                if (fds[i].fd >= FD_SETSIZE) {
                     errno = EINVAL;
                     return -1;
                 }
-
                 if (pollCopy[i].events & POLLIN) FD_SET(pollCopy[i].fd, &readSet);
                 if (pollCopy[i].events & POLLOUT) FD_SET(pollCopy[i].fd, &writeSet);
                 if (pollCopy[i].events & POLLERR) FD_SET(pollCopy[i].fd, &excepSet);
             }
-
             if (timeout < 0) {
                 ret = select(0, &readSet, &writeSet, &excepSet, NULL);
             } else {
@@ -692,7 +690,6 @@ int FDAPI_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
                 tv.tv_usec = 1000 * (timeout % 1000);
                 ret = select(0, &readSet, &writeSet, &excepSet, &tv);
             }
-
             if (ret < 0) {
                 return ret;
             }
@@ -1002,7 +999,8 @@ int FDAPI_fileno(FILE *file) {
 
 int FDAPI_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) {
     try {
-        if (readfds != NULL) {
+		// SK: ???there is indeed a socket, why lookupSocket by a socket again???
+        /*if (readfds != NULL) {
             for (u_int r = 0; r < readfds->fd_count; r++) {
                 readfds->fd_array[r] = RFDMap::getInstance().lookupSocket((RFD) readfds->fd_array[r]);
             }
@@ -1016,7 +1014,7 @@ int FDAPI_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
             for (u_int r = 0; r < exceptfds->fd_count; r++) {
                 exceptfds->fd_array[r] = RFDMap::getInstance().lookupSocket((RFD) exceptfds->fd_array[r]);
             }
-        }
+        }*/
 
         return f_select(nfds, readfds, writefds, exceptfds, timeout);
     } CATCH_AND_REPORT();
