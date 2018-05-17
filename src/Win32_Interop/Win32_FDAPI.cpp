@@ -671,7 +671,7 @@ int FDAPI_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
 
             nfds_t i;
             for (i = 0; i < nfds; i++) {
-                if (fds[i].fd == INVALID_SOCKET) {
+                if (pollCopy[i].fd == INVALID_SOCKET) {
                     continue;
                 }
                 if (fds[i].fd >= FD_SETSIZE) {
